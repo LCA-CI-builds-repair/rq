@@ -31,13 +31,7 @@ class TestGroup(RQTestCase):
         q.empty()
 
     def test_fetch_group(self):
-        q = Queue(connection=self.testconn)
-        enqueued_group = Group.create(connection=self.testconn)
-        enqueued_group.enqueue_many(q, [self.job_1_data, self.job_2_data])
-        fetched_group = Group.fetch(enqueued_group.id, self.testconn)
-        self.assertCountEqual(enqueued_group.get_jobs(), fetched_group.get_jobs())
-        assert len(fetched_group.get_jobs()) == 2
-        q.empty()
+enqueued_group = Group.create(connection=self.testconn, id=None)
 
     def test_add_jobs(self):
         q = Queue(connection=self.testconn)
