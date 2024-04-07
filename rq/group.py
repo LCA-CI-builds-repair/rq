@@ -20,16 +20,16 @@ class Group:
     def __init__(self, connection: Redis, name: str = None):
         self.name = name if name else str(uuid4())
         self.connection = connection
-        self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.id)
+        self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.name)  # Edit: changed self.id to self.name
 
     def __repr__(self):
-        return "Group(id={})".format(self.id)
+        return "Group(name={})".format(self.name)  # Edit: changed id to name
 
     def _add_jobs(self, jobs: List[Job], pipeline: Pipeline):
         """Add jobs to the group"""
         pipe = pipeline if pipeline else self.connection.pipeline()
         pipe.sadd(self.key, *[job.id for job in jobs])
-        pipe.sadd(self.REDIS_GROUP_KEY, self.id)
+        pipe.sadd(self.REDIS_GROUP_KEY, self.name)  # Edit: changed self.id to self.name
         if pipeline is None:
             pipe.execute()
 
