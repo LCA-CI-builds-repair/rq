@@ -20,7 +20,12 @@ if TYPE_CHECKING:
 
     from .executions import Execution, ExecutionRegistry
     from .queue import Queue
-    from .results import Result
+    from .results im        if connection:
+            self.connection = connection
+        else:
+            self.connection = resolve_connection()
+        self._id = id
+        self.created_at = utcnow()esult
 
 from .connections import resolve_connection
 from .exceptions import DeserializationError, InvalidJobOperation, NoSuchJobError

@@ -1,7 +1,25 @@
 from typing import List, Optional
 from uuid import uuid4
 
-from redis import Redis
+from redis im    @classmetho    def cleanup_grou    def all(cls, connection: 'Redis') -> List['Group']:
+        "Returns an iterable of all Groups."
+        group_keys = [as_text(key) for key in connection.smembers(cls.REDIS_GROUP_KEY)]
+        return [Group.fetch(id=key, connection=connection) for key in group_keys], id: str, connection: Redis, pipeline: Optional['Pipeline'] = None):
+        pipe = pipeline if pipeline else connection.pipeline()
+        key = cls.get_key(id)
+        job_ids = [as_text(job) for job in list(connection.smembers(key))]
+        expired_job_ids = [] def create(cls, connection: Redis, id: Optional[str] = None):
+        group = cls(connection=connection)
+        group.id = id
+        return group
+
+    @classmethod
+    def fetch(cls, id: str, connection: Redis):
+        """Fetch an existing group from Redis"""
+        group = cls(id=id, connection=connection)
+        if not connection.exists(Group.get_key(group.id)):
+            raise NoSuchGroupError
+        return group
 from redis.client import Pipeline
 
 from . import Queue

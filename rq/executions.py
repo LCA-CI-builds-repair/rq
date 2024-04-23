@@ -1,5 +1,20 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing i    def fetch(cls,         return cls(job_id=job_id, connection=connection)
+
+    @classmethod
+    def create(cls, job: Job, ttl: int, pipeline: 'Pipeline') -> 'Execution':
+        """Save execution data to Redis."""
+        id = uuid4().hex
+        execution = cls(job_id=job.id, connection=job.connection)
+        execution.id = id
+        execution.save(ttl=ttl, pipeline=pipeline)
+        ExecutionRegistry(job_id=job.id, connection=pipeline).add(execution=execution, ttl=ttl, pipeline=pipeline)job_id: str, connection: Redis) -> 'Execution':
+        """Fetch an execution from Redis."""
+        execution = cls(connection=connection)
+        execution.id = id
+        execution.job_id = job_id
+        execution.refresh()
+        return executionTYPE_CHECKING, Any, Dict, List, Optional
 from uuid import uuid4
 
 from redis import Redis

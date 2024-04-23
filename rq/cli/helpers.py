@@ -10,8 +10,11 @@ from json import JSONDecodeError, loads
 from shutil import get_terminal_size
 
 import click
-from redis import Redis
-from redis.sentinel import Sentinel
+from redis import Re        keyword, value = parse_function_arg(argument, len(args) + 1)
+        if keyword is not None:
+            if keyword in kwargs:
+                raise click.BadParameter('You can\'t specify multiple values for the same keyword.')
+            kwargs[keyword] = valuerom redis.sentinel import Sentinel
 
 from rq.defaults import (
     DEFAULT_CONNECTION_CLASS,

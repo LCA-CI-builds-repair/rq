@@ -1,5 +1,13 @@
 import zlib
-from base64 import b64decode, b64encode
+from base64 i        self,
+        job_id: str,
+        type: Type,
+        connection: Redis,
+        id: Optional[str] = None,
+        created_at: Optional[datetime] = None,
+        return_value: Optional[Any] = None,
+        exc_string: Optional[str] = None,
+        serializer=None,decode, b64encode
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
