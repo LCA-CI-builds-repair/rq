@@ -56,7 +56,26 @@ from .registry import StartedJobRegistry, clean_registries
 from .scheduler import RQScheduler
 from .serializers import resolve_serializer
 from .suspension import is_suspended
-from .timeouts import HorseMonitorTimeoutException, JobTimeoutException, UnixSignalDeathPenalty
+from .timeouts import HorseMonitorTimeoutclass ShutDownImminentException(Exception):
+    pass
+
+class Worker:
+    def handle_shutdown(self):
+        if self.imminent_shutdown_delay == 0:
+            self.log.warning('Imminent shutdown, raising ShutDownImminentException immediately')
+            self.request_force_stop_sigrtmin(signum, frame)
+        else:
+            self.log.warning(
+                'Imminent shutdown, raising ShutDownImminentException in %d seconds', self.imminent_shutdown_delay
+            )
+            signal.signal(signal.SIGRTMIN, self.request_force_stop_sigrtmin)
+            signal.signal(signal.SIGALRM, self.request_force_stop_sigrtmin)
+            signal.alarm(self.imminent_shutdown_delay)
+
+    def request_force_stop_sigrtmin(self, signum, frame):
+        info = dict((attr, getattr(frame, attr)) for attr in self.frame_properties)
+        self.log.warning('raising ShutDownImminentException to cancel job...')
+        raise ShutDownImminentException()TimeoutException, UnixSignalDeathPenalty
 from .utils import as_text, backend_class, compact, ensure_list, get_version, utcformat, utcnow, utcparse
 from .version import VERSION
 

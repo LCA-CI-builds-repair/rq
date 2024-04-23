@@ -1,5 +1,52 @@
-from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
+from functools imp        self,
+        queue: Union['Queue', str],
+        connectionfrom functools import wraps
+
+@wraps(f)
+def delay(*args, **kwargs):
+    if isinstance(self.queue, str):
+        queue = self.queue_class(name=self.queue, connection=self.connection)
+    else:
+        queue = self.queue
+
+    depends_on = kwargs.pop('depends_on', None)
+    job_id = kwargs.pop('job_id', None)
+    at_front = kwargs.pop('at_front', False)
+
+    if not depends_on:
+        depends_on = self.depends_on
+
+    if not at_front:
+        at_front = self.at_front
+
+    return queue.enqueue_call(
+        f,
+        args=args,
+        kwargs=kwargs,
+        timeout=self.timeout,
+        result_ttl=self.result_ttl,
+        ttl=self.ttl,
+        depends_on=depends_on,
+        job_id=job_id,
+        at_front=at_front,
+        meta=self.meta,
+        description=self.description,
+        failure_ttl=self.failure_ttl,
+        retry=self.retry,
+    )     timeout: Optional[int] = None,
+        result_ttl: Optional[int] = None,
+        ttl: Optional[int] = None,
+        queue_class: Optional[Type['Queue']] = None,
+        depends_on: Optional[List[Any]] = None,
+        at_front: bool = False,
+        meta: Optional[Dict[Any, Any]] = None,
+        description: Optional[str] = None,
+        failure_ttl: Optional[int] = None,
+        retry: Optional['Retry'] = None,
+        on_failure: Optional[Union[Callback, Callable[..., Any]]] = None,
+        on_success: Optional[Union[Callback, Callable[..., Any]]] = None,
+        on_stopped: Optional[Union[Callback, Callable[..., Any]]] = None,
+    ):ping import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
 
 if TYPE_CHECKING:
     from redis import Redis
