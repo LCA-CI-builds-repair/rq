@@ -1,6 +1,41 @@
 import zlib
-from base64 import b64decode, b64encode
-from datetime import datetime, timezone
+from base64 ifrom typing import Optional, Any
+from redis import Redis
+from datetime import datetime
+from typing import Type
+
+class Result:
+    def __init__(
+        self,
+        job_id: str,
+        type: Type,
+        connection: Redis,
+        id: Optional[str] = None,
+        created_at: Optional[datetime] = None,
+        return_value: Optional[Any] = None,
+        exc_string: Optional[str] = None,
+        serializer=None,
+    ):
+        self.return_value = return_value
+        self.exc_string = exc_string
+        self.type = type
+        self.created_at = created_at if created_at else datetime.now()
+        self.serializer = resolve_serializer(serializer)
+        self.connection = connection
+        self.job_id = job_id
+        self.id = id
+
+    def __repr__(self):
+        return f'Result(id={self.id}, type={self.type.__name__})'
+
+    def __eq__(self, other):
+        try:
+            return self.id == other.id
+        except AttributeError:
+            return False
+
+    def __bool__(self):
+        return bool(self.id)m datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
 

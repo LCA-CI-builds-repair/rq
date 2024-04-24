@@ -7,8 +7,32 @@ import random
 import signal
 import socket
 import sys
-import time
-import traceback
+imporfrom typing import Optional, Type
+from redis import Redis
+from rq.job import Job
+from rq.queue import Queue
+from rq.defaults import DEFAULT_RESULT_TTL, DEFAULT_WORKER_TTL, DEFAULT_MAINTENANCE_TASK_INTERVAL, DEFAULT_JOB_MONITORING_INTERVAL
+
+class Worker:
+    def __init__(
+        self,
+        queues,
+        name: Optional[str] = None,
+        default_result_ttl=DEFAULT_RESULT_TTL,
+        connection: Optional[Redis] = None,
+        exc_handler=None,
+        exception_handlers=None,
+        default_worker_ttl=DEFAULT_WORKER_TTL,
+        maintenance_interval: int = DEFAULT_MAINTENANCE_TASK_INTERVAL,
+        job_class: Optional[Type[Job]] = None,
+        queue_class: Optional[Type[Queue]] = None,
+        log_job_description: bool = True,
+        job_monitoring_interval=DEFAULT_JOB_MONITORING_INTERVAL,
+        disable_default_exception_handler: bool = False,
+        prepare_for_work: bool = True,
+        serializer=None,
+        work_horse_killed_handler: Optional[Callable[[Job, int, int, 'struct_rusage'], None]] = None,
+    ):  # noqaeback
 import warnings
 from datetime import datetime, timedelta
 from enum import Enum

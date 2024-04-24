@@ -7,9 +7,58 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 from functools import partial, update_wrapper
 from json import JSONDecodeError, loads
-from shutil import get_terminal_size
+from shutil importfrom enum import Enum
 
-import click
+class ParsingMode(Enum):
+    JSimport click
+from datetime import datetime, timedelta, timezone
+
+def parse_function_args(arguments):
+    args = []
+    kwargs = {}
+
+    for argument in arguments:
+        keyword, value = parse_function_arg(argument, len(args) + 1)
+        if keyword is not None:
+            if keyword in kwargs:
+                raise click.BadParameter('You can\'t specify multiple values for the same keyword.')
+            kwargs[keyword] = value
+        else:
+            args.append(value)
+    return args, kwargs
+
+def parse_schedule(schedule_in, schedule_at):
+    if schedule_in is not None:
+        if schedule_at is not None:
+            raise click.BadArgumentUsage('You can\'t specify both --schedule-in and --schedule-at')
+        return datetime.now(timezone.utc) + timedelta(seconds=parse_timeout(schedule_in))
+    elif schedule_at is not None:
+        return datetime.strptime(schedule_at, '%Y-%m-%dT%H:%M:%S')VAL = 'literal_eval'
+    PLAIN_TEXT = 'plain_text'
+
+def parse_argument(argument):
+    if argument.startswith(':'):  # no keyword, json
+        mode = ParsingMode.JSON
+        value = argument[1:]
+    elif argument.startswith('%'):  # no keyword, literal_eval
+        mode = ParsingMode.LITERAL_EVAL
+        value = argument[1:]
+    else:
+        index = argument.find('=')
+        if index > 0:
+            if ':' in argument and argument.index(':') + 1 == index:  # keyword, json
+                mode = ParsingMode.JSON
+                keyword = argument[: index - 1]
+            elif '%' in argument and argument.index('%') + 1 == index:  # keyword, literal_eval
+                mode = ParsingMode.LITERAL_EVAL
+                keyword = argument[: index - 1]
+            else:  # keyword, text
+                mode = ParsingMode.PLAIN_TEXT
+                keyword = argument[:index]
+            value = argument[index + 1 :]
+        else:  # no keyword, text
+            mode = ParsingMode.PLAIN_TEXT
+            value = argumentport click
 from redis import Redis
 from redis.sentinel import Sentinel
 

@@ -5,8 +5,155 @@ import logging
 import warnings
 import zlib
 from datetime import datetime, timedelta, timezone
-from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, Union
+from enum impofrom typing import Union, List, Tuple, Dict, Any
+from redis import Rfrom typing import Callable
+
+class Job:
+    def create(
+        cls,
+        func: FunctionReferenceType,
+        args: Union[List[Any], Optional[Tuple]] = None,
+        kwargs: Optional[Dict[str, Any]] = None,
+        connection: Optional['Redis'] = None,
+        resulfrom your_module import import_attribute, UNEVALUATED
+
+class Job:
+    @property
+    def failure_callback(self):
+        if self._failure_callbfrom typing import Optional
+
+class Job:
+    @classmethofrom datetime import datetime
+from your_module import resolve_connection, UNEVALUATED
+
+class Job:
+    def __init__(self, id, connection=None):
+        if connection:
+            self.connection = connection
+        else:
+            self.connection = resolve_connection()
+        self._id = id
+        self.created_at = datetime.utcnow()
+        self._data = UNEVALUATED
+        self._func_name = UNEVALUATED
+        self._instance = UNEVALUATED
+        self._args = UNEVALUATED
+        self._kwargs = UNEVALUATED
+        self._success_callback_name = None
+        self._success_callback = UNEVALUATED
+        self._failure_callback_name = None
+        self._failure_callback = UNEVALUATED
+        self._stopped_callback_name = None
+        self._stopped_callback = UNEVALUATED
+        self.description = None
+        self.origin = ''
+        self.enqueued_at = None
+        self.started_at = None
+        self.ended_at = None
+        self._result = None
+        self._exc_info = None str, connection: Optional['Redis'] = None, serializer: Optional[_type_] = None) -> Job:
+        """
+        Fetch a Job instance based on the provided ID.
+
+        Args:
+            id (str): The ID of the Job to fetch.
+            connection (Optional['Redis'], optional): An optional Redis connection. Defaults to None.
+            serializer (_type_, optional): The serializer to use. Defaults to None.
+
+        Returns:
+            Job: The Job instance.
+        """
+        # TODO: this method needs to support fetching jobs based on execution ID
+        job = cls(parse_job_id(id), connection=connection, serializer=serializer)
+        job.refresh()
+        return jobLUATED:
+            if self._failure_callback_name:
+                self._failure_callback = import_attribute(self._failure_callback_name)
+            else:
+                self._failure_callback = None
+
+        return self._failure_callback
+
+    @property
+    def failure_callback_timeout(self) -> int:
+        if self._failure_callback_timeout is None:
+            return CALLBACK_TIMEOUT
+
+        return self._failure_callback_timeout
+
+    @property
+    def stopped_callback(self):
+        if self._stopped_callback is UNEVALUATED:
+            if self._stopped_callback_name:
+                self._stopped_callback = import_attribute(self._stopped_callback_name)
+            else:
+                self._stopped_callback = None
+
+        return self._stopped_callback,
+        ttl: Optional[int] = None,
+        status: Optional[JobStatus] = None,
+        description: Optional[str] = None,
+        depends_on: Optional[JobDependencyType] = None,
+        timeout: Optional[int] = None,
+        id: Optional[str] = None,
+        origin: str = '',
+        meta: Optional[Dict[str, Any]] = None,
+        failure_ttl: Optional[int] = None,
+        serializer=None,
+        group_id: Optional[str] = None,
+        *,
+        on_success: Optional[Union['Callback', Callable[..., Any]]] = None,
+        on_failure: Optional[Union['Callback', Callable[..., Any]]] = None,
+        on_stopped: Optional[Union['Callback', Callable[..., Any]]] = None,
+    ):
+        """
+        Create a job instance.
+
+        Raises:
+            TypeError: If `args` is not a tuple/list
+            TypeError: If `kwargs` is not a dict
+            TypeError: If the `func` is something other than a string or a Callable reference
+            ValueError: If `on_failure` is not a Callback or function or string
+            ValueError: If `on_success` is not a Callback or function or string
+            ValueError: If `on_stopped` is not a Callback or function or string
+
+        Returns:
+            Job: A job instance.
+        """
+        if args is None:
+            args = ()
+        if kwargs is None:
+            kwargs = {}
+
+        if not isinstance(args, (tuple, list)):
+            raise TypeError('args must be a tuple or a list')
+        if not isinstance(kwargs, dict):
+            raise TypeError('kwargs must be a dictionary')
+
+        job = cls(connection=connection, serializer=serializer)
+        if id is not None:
+            job.set_id(id)f create(
+        cls,
+        func: FunctionReferenceType,
+        args: Union[List[Any], Optional[Tuple]] = None,
+        kwargs: Optional[Dict[str, Any]] = None,
+        connection: Optional[Redis] = None,
+        result_ttl: Optional[int] = None,
+        ttl: Optional[int] = None,
+        status: Optional[JobStatus] = None,
+        description: Optional[str] = None,
+        depends_on: Optional[JobDependencyType] = None,
+        timeout: Optional[int] = None,
+        id: Optional[str] = None,
+        origin: str = '',
+        meta: Optional[Dict[str, Any]] = None,
+        failure_ttl: Optional[int] = None,
+        serializer=None,
+        group_id: Optional[str] = None,
+        *,
+        on_success: Optional[Union['Callback', Callable[..., Any]]] = None,  # Callable is deprecated
+        on_failure: Optional[Union['Callback', Callable[..., Any]]] = None,  # Callable is deprecated
+    ):mport TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, Union
 from uuid import uuid4
 
 from redis import WatchError

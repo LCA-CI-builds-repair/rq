@@ -1,8 +1,39 @@
 from typing import List, Optional
 from uuid import uuid4
 
+from redis imfrom typing import Optional
 from redis import Redis
 from redis.client import Pipeline
+from rq.job import Job
+from rq.utils import as_text
+from rq.exceptions import NoSuchGroupError
+
+class Group:
+    @classmethod
+    def create(cls, connection: Redis, id: Optional[str] = None):
+        return cls(connection=connection, id=id)
+
+    @classmethod
+    def fetch(cls, id: str, connection: Redis):
+        """Fetch an existing group from Redis"""
+        group = cls(connection=connection, id=id)
+        if not connection.exists(Group.get_key(group.id)):
+            raise NoSuchGroupError
+        return group
+
+    @classmethod
+    def cleanup_group(cls, id: str, connection: Redis, pipeline: Optional[Pipeline] = None):
+        pipe = pipeline if pipeline else connection.pipeline()
+        key = cls.get_key(id)
+        job_ids = [as_text(job) for job in list(connection.smembers(key))]
+        expired_job_ids = []
+        with connection.pipeline() as p:
+            p.exists(*[Job.key_for(job) for job in job_ids])
+            results = p.execute()
+
+        for i, key_exists in enumerate(results):
+            if not key_exists:
+                expired_job_ids.append(job_ids[i])ient import Pipeline
 
 from . import Queue
 from .exceptions import NoSuchGroupError

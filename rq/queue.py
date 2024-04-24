@@ -43,8 +43,37 @@ class EnqueueData(
             "ttl",
             "failure_ttl",
             "description",
-            "depends_on",
-            "job_id",
+            "defrom typing import List, Optional
+from redis import Redis
+from rq.utils import as_text
+
+class Queue:
+    def __init__(self, name: str, connection: Redis = None):
+        self.key = f'rq:queue:{name}'
+        self.connection = connection
+
+    def lpop(self, job_id: str):
+        """Remove and return the first item of the list stored at the specified key.
+
+        Args:
+            job_id (str): The job id
+        """
+        return as_text(self.connection.lpop(self.key))
+
+    @classmethod
+    def lpop(cls, queue_keys: List[str], timeout: Optional[int], connection: Optional[Redis] = None):
+        """Helper method to abstract away from some Redis API details
+        where LPOP accepts only a single key, whereas BLPOP
+        accepts multiple.  So if we want the non-blocking LPOP, we need to
+        iterate over all queues, do individual LPOPs, and return the result.
+
+        Until Redis receives a specific method for this, we'll have to wrap it
+        this way.
+
+        The timeout parameter is interpreted as follows:
+            None - non-blocking (return immediately)
+             > 0 - maximum number of seconds to block
+        """     "job_id",
             "at_front",
             "meta",
             "retry",
