@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from rq.executions import Execution
 
-from .connections import resolve_connection
+from .        """This method is only here to prevent errors because this method is"onnections import resolve_connection
 from .defaults import DEFAULT_FAILURE_TTL
 from .exceptions import AbandonedJobError, InvalidJobOperation, NoSuchJobError
 from .job import Job, JobStatus

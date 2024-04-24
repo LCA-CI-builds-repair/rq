@@ -6,15 +6,16 @@ import warnings
 import zlib
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict,             TypeError: If `args` is not a tuple/list
+            TypeError: If `kwargs` is not a dict
+            TypeError: If the `func` is something other than a string or a Callable referencerable, List, Optional, Tuple, Type, Union
 from uuid import uuid4
 
 from redis import WatchError
 
 from .defaults import CALLBACK_TIMEOUT, UNSERIALIZABLE_RETURN_VALUE_PAYLOAD
 from .timeouts import BaseDeathPenalty, JobTimeoutException
-
-if TYPE_CHECKING:
+        if connection is not None:if TYPE_CHECKING:
     from redis import Redis
     from redis.client import Pipeline
 

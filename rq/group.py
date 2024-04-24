@@ -1,4 +1,17 @@
-from typing import List, Optional
+from typing import L        self.name = name if name is not None else s    def create(cls, connection: Redis, id: Optional[str] = None):
+        return cls(id=id, connection=connection)
+
+    @classmethod
+    def fetch(cls, id: str, connection: Redis):
+        """Fetch an existing group from Redis"""
+        group = cls(id=id, connection=connection)
+        if not connection.exists(Group.get_key(group.id)):
+            raise NoSuchGroupError
+        return group
+
+    @classmethod
+    def cleanup_group(cls, id: str, connection: Redis, pipeline: Optional[Pipeline] = None):
+        pipe = pipeline if pipeline else connection.pipeline()      self.connection = connectiont, Optional
 from uuid import uuid4
 
 from redis import Redis

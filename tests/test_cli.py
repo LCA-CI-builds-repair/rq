@@ -18,7 +18,11 @@ from rq.serializers import JSONSerializer
 from rq.timeouts import UnixSignalDeathPenalty
 from rq.worker import Worker, WorkerStatus
 from tests import RQTestCase
-from tests.fixtures import div_by_zero, say_hello
+from tests.fixtur        result = runner.invoke(
+            main, ['enqueue', '-u', self.redis_url, 'tests.fixtures.echo', '%invalid_eval_statement']
+        )
+        self.assertNotEqual(result.exit_code, 0)
+        self.assertIn('Unable to eval non-keyword argument as a Python object.', result.output)ort div_by_zero, say_hello
 
 
 class CLITestCase(RQTestCase):

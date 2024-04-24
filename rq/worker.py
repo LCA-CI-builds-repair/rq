@@ -9,12 +9,152 @@ import socket
 import sys
 import time
 import traceback
-import warnings
-from datetime import datetime, timedelta
-from enum import Enum
-from random import shuffle
-from types import FrameType
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Type, Union
+        self.connection: Optional[Redis] = connection
+        self.redis_server_version: Optional[str] = None
+
+        self.job_class = backend_class(self, 'job_class', override=job_class)
+        self.queue_class = backend_class(self, 'queue_class', override=queue_class)
+        self.version: str = VERSION
+        self.python_version: str = sys.version
+        self.serializer = resolve_serializer(serializer)
+        self.execution: Optional[Execution] = None
+
+        queues: List[Queue] = [
+            self.queue_class(
+                name=q,
+                connection=connection,
+                job_class=self.job_class,
+                serializer=self.serializer,
+                death_penalty_class=self.death_penalty_class,
+            )
+            if isinstance(q, str)
+            else q
+            for q in ensure_list(queues)
+        ]
+
+        self.name: str = name or uuid4().hex
+        self.queues: List[Queue] = queues
+        self.validate_queues()
+        self._ordered_queues: List[Queue] = self.queues[:]
+        self._exc_handlers: List[Callable] = []
+        self._work_horse_killed_handler = work_horse_killed_handler
+        self._shutdown_requested_date: Optional[datetime] = None
+
+        self._state: str = 'starting'
+        self._is_horse: bool = False
+        self._horse_pid: int = 0
+        self._stop_requested: bool = False
+        self._stopped_job_id: Optional[str] = None
+
+        self.log: Logger = logger
+        self.log_job_description: bool = log_job_description
+        self.last_cleaned_at: Optional[datetime] = None
+        self.successful_job_count: int = 0
+        self.failed_job_count: int = 0
+        self.total_working_time: float = 0
+        self.current_job_working_time: float = 0
+        self.birth_date: Optional[datetime] = None
+        self.scheduler: Optional[RQScheduler] = None
+        self.pubsub: Optional[PubSub] = None
+        self.pubsub_thread = None
+        self._dequeue_strategy: DequeueStrategy = DequeueStrategy.DEFAULT
+
+        self.disable_default_exception_handler: bool = disable_default_exception_handler
+
+        if prepare_for_work:
+            self.hostname: Optional[str] = socket.gethostname()
+            self.pid: Optional[int] = os.getpid()
+            try:
+                connection.client_setname(self.name)
+            except redis.exceptions.ResponseError:
+                warnings.warn('CLIENT SETNAME command not supported, setting ip_address to unknown', Warning)
+                self.ip_address: str = 'unknown'
+            else:
+                client_addresses = [client['addr'] for client in connection.client_list() if client['name'] == self.name]
+                if len(client_addresses) > 0:
+                    self.ip_address: str = client_addresses[0]
+                else:
+                    warnings.warn('CLIENT LIST command not supported, setting ip_address to unknown', Warning)
+                    self.ip_address: str = 'unknown'
+        else:
+            self.hostname: Optional[str] = None
+            self.pid: Optional[int] = None
+            self.ip_address: str = 'unknown'
+
+        if isinstance(exception_handlers, (list, tuple)):
+            for handler in exception_handlers:
+                self.push_exc_handler(handler)
+        elif exception_handlers is not None:
+            self.push_exc_handler(exception_handlers)
+
+    @classmethod
+    def find_by_key(
+        cls,
+        worker_key: str,
+        connection: Optional[Redis] = None,
+        job_class: Optional[Type[Job]] = None,
+        queue_class: Optional[Type[Queue]] = None,
+        serializer=None,
+    ) -> Optional[BaseWorker]:
+        """Returns a Worker instance, based on the naming conventions for
+        naming the internal Redis keys. Can be used to reverse-lookup Workers
+        by their Redis keys.
+
+        Args:
+            worker_key (str): The worker key
+            connection (Optional[Redis], optional): Redis connection. Defaults to None.
+            job_class (Optional[Type[Job]], optional): The job class if custom class is being used. Defaults to None.
+            queue_class (Optional[Type[Queue]]): The queue class if a custom class is being used. Defaults to None.
+            serializer (Any, optional): The serializer to use. Defaults to None.
+
+        Raises:
+            ValueError: If the key doesn't start with `rq:worker:`, the default worker namespace prefix.
+
+        Returns:
+            worker (BaseWorker): The Worker instance.
+        """
+        prefix: str = cls.redis_worker_namespace_prefix
+        if not worker_key.startswith(prefix):
+            raise ValueError('Not a valid RQ worker key: %s' % worker_key)
+
+        if connection is None:
+            connection = get_current_connection()
+        if not connection.exists(worker_key):
+            connection.srem(cls.redis_workers_keys, worker_key)
+            return None
+
+        name: str = worker_key[len(prefix):]
+        worker: BaseWorker = cls(
+            [],
+            name,
+            connection=connection,
+            job_class=job_class,
+            queue_class=queue_class,
+            prepare_for_work=False,
+            serializer=serializer,
+        )
+
+        worker.refresh()
+        return worker
+
+    @classmethod
+    def all(
+        cls,
+        connection: Optional[Redis] = None,
+        job_class: Optional[Type[Job]] = None,
+        queue_class: Optional[Type[Queue]] = None,
+        queue: Optional[Queue] = None,
+        serializer=None,
+    ) -> List[Worker]:
+        """Returns an iterable of all Workers.
+
+        Returns:
+            workers (List[Worker]): A list of workers
+        """
+        if queue:
+            connection = queue.connection
+        elif connection is None:
+            connection = get_current_connection()import TYPE_CHECKING, Callable, List, Optional, Tuple, Type, Union
 from uuid import uuid4
 
 if TYPE_CHECKING:

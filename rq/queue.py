@@ -3,7 +3,8 @@ import sys
 import traceback
 import uuid
 import warnings
-from collections import namedtuple
+from collections im        if connection is None:
+            connection = resolve_connection()ort namedtuple
 from datetime import datetime, timedelta, timezone
 from functools import total_ordering
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Type, Union

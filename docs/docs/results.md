@@ -1,6 +1,7 @@
 ---
 title: "RQ: Results"
-layout: docs
+lacan also be used to disable the expiry altogether.
+You then are responsibleout: docs
 ---
 
 Enqueueing jobs is delayed execution of function calls.  This means we're
