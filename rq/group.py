@@ -60,37 +60,9 @@ class Group:
         return [job for job in Job.fetch_many(job_ids, self.connection) if job is not None]
 
     def delete(self):
-        self.connection.delete(self.key)
-
-    def delete_job(self, job_id: str, pipeline: Optional['Pipeline'] = None):
-        pipe = pipeline if pipeline else self.connection.pipeline()
-        pipe.srem(self.key, job_id)
-        if pipeline is None:
-            pipe.execute()
-
     @classmethod
     def create(cls, connection: Redis, id: Optional[str] = None):
         return cls(id=id, connection=connection)
-
-    @classmethod
-    def fetch(cls, id: str, connection: Redis):
-        """Fetch an existing group from Redis"""
-        group = cls(id=id, connection=connection)
-        if not connection.exists(Group.get_key(group.id)):
-            raise NoSuchGroupError
-        return group
-
-    @classmethod
-    def cleanup_group(cls, id: str, connection: Redis, pipeline: Optional['Pipeline'] = None):
-        pipe = pipeline if pipeline else connection.pipeline()
-        key = cls.get_key(id)
-        job_ids = [as_text(job) for job in list(connection.smembers(key))]
-        expired_job_ids = []
-        with connection.pipeline() as p:
-            p.exists(*[Job.key_for(job) for job in job_ids])
-            results = p.execute()
-
-        for i, key_exists in enumerate(results):
             if not key_exists:
                 expired_job_ids.append(job_ids[i])
 
@@ -98,15 +70,9 @@ class Group:
             pipe.srem(key, *expired_job_ids)
 
         if pipeline is None:
-            pipe.execute()
-
     @classmethod
-    def all(cls, connection: 'Redis') -> List['Group']:
-        "Returns an iterable of all Groupes."
-        group_keys = [as_text(key) for key in connection.smembers(cls.REDIS_GROUP_KEY)]
-        return [Group.fetch(key, connection=connection) for key in group_keys]
-
-    @classmethod
+    def create(cls, connection: Redis, id: Optional[str] = None):
+        return cls(id=id, connection=connection)
     def get_key(cls, id: str) -> str:
         """Return the Redis key of the set containing a group's jobs"""
         return cls.REDIS_GROUP_NAME_PREFIX + id
