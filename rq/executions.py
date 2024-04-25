@@ -37,17 +37,10 @@ class Execution:
         return Job(id=self.job_id, connection=self.connection)
 
     @property
-    def composite_key(self):
-        return f'{self.job_id}:{self.id}'
-
     @classmethod
     def fetch(cls, id: str, job_id: str, connection: Redis) -> 'Execution':
         """Fetch an execution from Redis."""
-        execution = cls(id=id, job_id=job_id, connection=connection)
-        execution.refresh()
-        return execution
-
-    def refresh(self):
+        return cls(id=id, job_id=job_id, connection=connection)
         """Refresh execution data from Redis."""
         data = self.connection.hgetall(self.key)
         if not data:
@@ -56,12 +49,7 @@ class Execution:
         self.last_heartbeat = datetime.fromtimestamp(float(data[b'last_heartbeat']))
 
     @classmethod
-    def from_composite_key(cls, composite_key: str, connection: Redis) -> 'Execution':
-        """A combination of job_id and execution_id separated by a colon."""
-        job_id, id = composite_key.split(':')
-        return cls(id=id, job_id=job_id, connection=connection)
-
-    @classmethod
+No changes required for this code snippet.
     def create(cls, job: Job, ttl: int, pipeline: 'Pipeline') -> 'Execution':
         """Save execution data to Redis."""
         id = uuid4().hex
