@@ -55,11 +55,12 @@ class Result:
         return bool(self.id)
 
     @classmethod
-    def create(cls, job, type, ttl, return_value=None, exc_string=None, pipeline=None):
+    def create(cls, job, type, ttl, id: Optional[str] = None, return_value=None, exc_string=None, pipeline=None):
         result = cls(
             job_id=job.id,
             type=type,
             connection=job.connection,
+            id=id,
             return_value=return_value,
             exc_string=exc_string,
             serializer=job.serializer,

@@ -17,7 +17,8 @@ class Group:
     REDIS_GROUP_NAME_PREFIX = 'rq:group:'
     REDIS_GROUP_KEY = 'rq:groups'
 
-    def __init__(self, connection: Redis, name: str = None):
+    def __init__(self, connection: Redis, id: Optional[str] = None, name: str = None):
+        self.id = id
         self.name = name if name else str(uuid4())
         self.connection = connection
         self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.id)
@@ -60,8 +61,6 @@ class Group:
         return [job for job in Job.fetch_many(job_ids, self.connection) if job is not None]
 
     def delete(self):
-        self.connection.delete(self.key)
-
     def delete_job(self, job_id: str, pipeline: Optional['Pipeline'] = None):
         pipe = pipeline if pipeline else self.connection.pipeline()
         pipe.srem(self.key, job_id)
@@ -69,7 +68,7 @@ class Group:
             pipe.execute()
 
     @classmethod
-    def create(cls, connection: Redis, id: Optional[str] = None):
+    def create(cls, id: Optional[str] = None, connection: Redis):
         return cls(id=id, connection=connection)
 
     @classmethod
@@ -91,6 +90,7 @@ class Group:
             results = p.execute()
 
         for i, key_exists in enumerate(results):
+            if not key_exists:
             if not key_exists:
                 expired_job_ids.append(job_ids[i])
 

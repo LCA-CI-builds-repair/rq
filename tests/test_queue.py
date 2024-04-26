@@ -31,13 +31,11 @@ class MultipleDependencyJob(Job):
     create_job = Job.create
 
     @classmethod
-    def create(cls, *args, **kwargs):
+    def create(cls, connection: Redis, id: Optional[str] = None):
         dependency_ids = kwargs.pop('kwargs').pop('_dependency_ids')
-        _job = cls.create_job(*args, **kwargs)
+        _job = cls.create_job(id=id, connection=connection)
         _job._dependency_ids = dependency_ids
         return _job
-
-
 class TestQueue(RQTestCase):
     def test_create_queue(self):
         """Creating queues."""

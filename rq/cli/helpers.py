@@ -300,8 +300,6 @@ def parse_function_arg(argument, arg_pos):
             )
 
     return keyword, value
-
-
 def parse_function_args(arguments):
     args = []
     kwargs = {}
@@ -315,8 +313,6 @@ def parse_function_args(arguments):
         else:
             args.append(value)
     return args, kwargs
-
-
 def parse_schedule(schedule_in, schedule_at):
     if schedule_in is not None:
         if schedule_at is not None:

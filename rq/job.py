@@ -587,10 +587,17 @@ class Job:
         return bool(job_exists)
 
     @classmethod
-    def fetch(cls, id: str, connection: Optional['Redis'] = None, serializer=None) -> 'Job':
+    def fetch(cls, id: str, connection: Optional['Redis'] = None, serializer=None, id: Optional[str] = None) -> 'Job':
         """Fetches a persisted Job from its corresponding Redis key and instantiates it
 
         Args:
+            id (str): The unique identifier of the Job to fetch
+            connection (Optional['Redis']): The Redis connection to use
+            serializer: The serializer to use for deserialization
+        """
+        if not connection:
+            connection = resolve_connection()
+        return cls(id=id, connection=connection)
             id (str): The Job to fetch
             connection (Optional[&#39;Redis&#39;], optional): An optional Redis connection. Defaults to None.
             serializer (_type_, optional): The serializer to use. Defaults to None.
@@ -638,13 +645,6 @@ class Job:
         return jobs
 
     def __init__(self, id: Optional[str] = None, connection: Optional['Redis'] = None, serializer=None):
-        if connection:
-            self.connection = connection
-        else:
-            self.connection = resolve_connection()
-        self._id = id
-        self.created_at = utcnow()
-        self._data = UNEVALUATED
         self._func_name = UNEVALUATED
         self._instance = UNEVALUATED
         self._args = UNEVALUATED
@@ -652,6 +652,13 @@ class Job:
         self._success_callback_name = None
         self._success_callback = UNEVALUATED
         self._failure_callback_name = None
+        self._failure_callback = UNEVALUATED
+        self._stopped_callback_name = None
+        self._stopped_callback = UNEVALUATED
+        self.description: Optional[str] = None
+        self.origin: str = ''
+        self.enqueued_at: Optional[datetime] = None
+        self.started_at: Optional[datetime] = None
         self._failure_callback = UNEVALUATED
         self._stopped_callback_name = None
         self._stopped_callback = UNEVALUATED

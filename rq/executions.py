@@ -65,12 +65,11 @@ class Execution:
     def create(cls, job: Job, ttl: int, pipeline: 'Pipeline') -> 'Execution':
         """Save execution data to Redis."""
         id = uuid4().hex
-        execution = cls(id=id, job_id=job.id, connection=job.connection)
+        execution = cls(job_id=job.id, id=id, connection=job.connection)
         execution.save(ttl=ttl, pipeline=pipeline)
         ExecutionRegistry(job_id=job.id, connection=pipeline).add(execution=execution, ttl=ttl, pipeline=pipeline)
         job.started_job_registry.add_execution(execution, pipeline=pipeline, ttl=ttl, xx=False)
         return execution
-
     def save(self, ttl: int, pipeline: Optional['Pipeline'] = None):
         """Save execution data to Redis and JobExecutionRegistry."""
         connection = pipeline if pipeline is not None else self.connection
