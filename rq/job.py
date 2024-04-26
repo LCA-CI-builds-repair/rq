@@ -161,6 +161,7 @@ class Job:
         depends_on: Optional[JobDependencyType] = None,
         timeout: Optional[int] = None,
         id: Optional[str] = None,
+    ):
         origin: str = '',
         meta: Optional[Dict[str, Any]] = None,
         failure_ttl: Optional[int] = None,
@@ -638,11 +639,12 @@ class Job:
         return jobs
 
     def __init__(self, id: Optional[str] = None, connection: Optional['Redis'] = None, serializer=None):
-        if connection:
             self.connection = connection
         else:
+            from rq.connections import resolve_connection
+            from rq.utils import utcnow
             self.connection = resolve_connection()
-        self._id = id
+        self._id: Optional[str] = id
         self.created_at = utcnow()
         self._data = UNEVALUATED
         self._func_name = UNEVALUATED
@@ -650,6 +652,7 @@ class Job:
         self._args = UNEVALUATED
         self._kwargs = UNEVALUATED
         self._success_callback_name = None
+        self._success_callback = UNEVALUATED
         self._success_callback = UNEVALUATED
         self._failure_callback_name = None
         self._failure_callback = UNEVALUATED

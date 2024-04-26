@@ -303,7 +303,7 @@ class TestWorker(RQTestCase):
         worker.prepare_execution(job)
         worker.prepare_job_execution(job)
         worker.maintain_heartbeats(job)
-        self.assertTrue(self.testconn.exists(worker.key))
+        self.assertFalse(self.testconn.exists(job.key))
         self.assertTrue(self.testconn.exists(job.key))
 
         self.testconn.delete(job.key)

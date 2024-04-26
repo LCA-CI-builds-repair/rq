@@ -35,7 +35,7 @@ class job:  # noqa
     ):
         """A decorator that adds a ``delay`` method to the decorated function,
         which in turn creates a RQ job when called. Accepts a required
-        ``queue`` argument that can be either a ``Queue`` instance or a string
+        "queue" argument that can be either a "Queue" instance or a string
         denoting the queue name.  For example::
 
             ..codeblock:python::

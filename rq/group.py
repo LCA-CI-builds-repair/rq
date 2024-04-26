@@ -21,7 +21,6 @@ class Group:
         self.name = name if name else str(uuid4())
         self.connection = connection
         self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.id)
-
     def __repr__(self):
         return "Group(id={})".format(self.id)
 
@@ -60,6 +59,7 @@ class Group:
         return [job for job in Job.fetch_many(job_ids, self.connection) if job is not None]
 
     def delete(self):
+    def delete(self):
         self.connection.delete(self.key)
 
     def delete_job(self, job_id: str, pipeline: Optional['Pipeline'] = None):
@@ -71,7 +71,6 @@ class Group:
     @classmethod
     def create(cls, connection: Redis, id: Optional[str] = None):
         return cls(id=id, connection=connection)
-
     @classmethod
     def fetch(cls, id: str, connection: Redis):
         """Fetch an existing group from Redis"""
@@ -98,12 +97,12 @@ class Group:
             pipe.srem(key, *expired_job_ids)
 
         if pipeline is None:
+        if pipeline is None:
             pipe.execute()
 
     @classmethod
     def all(cls, connection: 'Redis') -> List['Group']:
-        "Returns an iterable of all Groupes."
-        group_keys = [as_text(key) for key in connection.smembers(cls.REDIS_GROUP_KEY)]
+        "Returns an iterable of all Groups."
         return [Group.fetch(key, connection=connection) for key in group_keys]
 
     @classmethod

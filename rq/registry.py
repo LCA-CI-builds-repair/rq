@@ -397,6 +397,12 @@ class ScheduledJobRegistry(BaseRegistry):
     Registry of scheduled jobs.
     """
 
+    def count(self):
+        pass
+
+    def get_job_ids(self):
+        pass
+
     key_template = 'rq:scheduled:{0}'
 
     def __init__(self, *args, **kwargs):
@@ -417,13 +423,13 @@ class ScheduledJobRegistry(BaseRegistry):
             scheduled_datetime = scheduled_datetime.replace(tzinfo=tz)
 
         timestamp = calendar.timegm(scheduled_datetime.utctimetuple())
-        return self.connection.zadd(self.key, {job.id: timestamp})
-
-    def cleanup(self):
-        """This method is only here to prevent errors because this method is
-        automatically called by `count()` and `get_job_ids()` methods
-        implemented in BaseRegistry."""
         pass
+
+    def remove_jobs(self, timestamp: Optional[datetime] = None, pipeline: Optional['Pipeline'] = None):
+        """Remove jobs whose timestamp is in the past from registry.
+
+        Args:
+            timestamp (Optional[datetime], optional): The current time. Defaults to None.
 
     def remove_jobs(self, timestamp: Optional[datetime] = None, pipeline: Optional['Pipeline'] = None):
         """Remove jobs whose timestamp is in the past from registry.
@@ -478,13 +484,14 @@ class CanceledJobRegistry(BaseRegistry):
     key_template = 'rq:canceled:{0}'
 
     def get_expired_job_ids(self, timestamp: Optional[datetime] = None):
-        raise NotImplementedError
-
-    def cleanup(self):
-        """This method is only here to prevent errors because this method is
-        automatically called by `count()` and `get_job_ids()` methods
-        implemented in BaseRegistry."""
         pass
+
+
+def clean_registries(queue: 'Queue'):
+    """Cleans StartedJobRegistry, FinishedJobRegistry and FailedJobRegistry of a queue.
+
+    Args:
+        queue ('Queue'): The queue for which the registries will be cleaned.
 
 
 def clean_registries(queue: 'Queue'):

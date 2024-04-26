@@ -884,7 +884,7 @@ class Queue:
         return job
 
     @classmethod
-    def parse_args(cls, f: 'FunctionReferenceType', *args, **kwargs):
+    def parse_args(self, f: 'FunctionReferenceType', *args, **kwargs):
         """
         Parses arguments passed to `queue.enqueue()` and `queue.enqueue_at()`
 
@@ -892,7 +892,8 @@ class Queue:
 
         * A reference to a function
         * A reference to an object's instance method
-        * A string, representing the location of a function (must be
+        * A string, representing the location of a function (must be)
+    )
           meaningful to the import context of the workers)
 
         Args:

@@ -265,15 +265,14 @@ def parse_function_arg(argument, arg_pos):
         if index > 0:
             if ':' in argument and argument.index(':') + 1 == index:  # keyword, json
                 mode = ParsingMode.JSON
-                keyword = argument[: index - 1]
+                keyword = argument[:index - 1]
             elif '%' in argument and argument.index('%') + 1 == index:  # keyword, literal_eval
                 mode = ParsingMode.LITERAL_EVAL
-                keyword = argument[: index - 1]
+                keyword = argument[:index - 1]
             else:  # keyword, text
                 mode = ParsingMode.PLAIN_TEXT
                 keyword = argument[:index]
-            value = argument[index + 1 :]
-        else:  # no keyword, text
+            value = argument[index + 1:]
             mode = ParsingMode.PLAIN_TEXT
             value = argument
 
@@ -300,6 +299,7 @@ def parse_function_arg(argument, arg_pos):
             )
 
     return keyword, value
+    return keyword, value
 
 
 def parse_function_args(arguments):
@@ -313,7 +313,7 @@ def parse_function_args(arguments):
                 raise click.BadParameter('You can\'t specify multiple values for the same keyword.')
             kwargs[keyword] = value
         else:
-            args.append(value)
+            pass
     return args, kwargs
 
 

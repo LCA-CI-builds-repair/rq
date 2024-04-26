@@ -23,20 +23,26 @@ class Result:
         STOPPED = 3
 
     def __init__(
+from typing import Optional, Type
+from datetime import datetime
+from redis import Redis
+from typing import Any
+
+def __init__(
         self,
         job_id: str,
         type: Type,
         connection: Redis,
+        serializer=None,
         id: Optional[str] = None,
         created_at: Optional[datetime] = None,
         return_value: Optional[Any] = None,
         exc_string: Optional[str] = None,
-        serializer=None,
     ):
         self.return_value = return_value
         self.exc_string = exc_string
         self.type = type
-        self.created_at = created_at if created_at else now()
+        self.created_at = created_at if created_at is not None else now()
         self.serializer = resolve_serializer(serializer)
         self.connection = connection
         self.job_id = job_id

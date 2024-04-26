@@ -127,11 +127,11 @@ class BaseWorker:
         self,
         queues,
         name: Optional[str] = None,
-        default_result_ttl=DEFAULT_RESULT_TTL,
+        default_result_ttl: int = DEFAULT_RESULT_TTL,
         connection: Optional['Redis'] = None,
         exc_handler=None,
         exception_handlers=None,
-        default_worker_ttl=DEFAULT_WORKER_TTL,
+        default_worker_ttl: int = DEFAULT_WORKER_TTL,
         maintenance_interval: int = DEFAULT_MAINTENANCE_TASK_INTERVAL,
         job_class: Optional[Type['Job']] = None,
         queue_class: Optional[Type['Queue']] = None,
@@ -707,8 +707,8 @@ class BaseWorker:
         If `None` is used it will delete the current job key.
 
         Args:
-            job_id (Optional[str], optional): The job id. Defaults to None.
-            pipeline (Optional[Pipeline], optional): The pipeline to use. Defaults to None.
+            job_id: Optional[str] = None,
+            pipeline: Optional[Pipeline] = None,
         """
         connection = pipeline if pipeline is not None else self.connection
         if job_id is None:
@@ -720,11 +720,12 @@ class BaseWorker:
         """Retrieves the current job id.
 
         Args:
-            pipeline (Optional[&#39;Pipeline&#39;], optional): The pipeline to use. Defaults to None.
+            pipeline (Optional['Pipeline'], optional): The pipeline to use. Defaults to None.
 
         Returns:
-            job_id (Optional[str): The job id
+            job_id (Optional[str]): The job id
         """
+        from rq.utils import as_text
         connection = pipeline if pipeline is not None else self.connection
         result = connection.hget(self.key, 'current_job')
         if result is None:
@@ -732,11 +733,10 @@ class BaseWorker:
         return as_text(result)
 
     def get_current_job(self) -> Optional['Job']:
-        """Returns the currently executing job instance.
-
         Returns:
-            job (Job): The job instance.
+            job (Optional[Job]): The job instance.
         """
+        from rq.job import Job
         job_id = self.get_current_job_id()
         if job_id is None:
             return None
@@ -749,6 +749,7 @@ class BaseWorker:
             state (str): The state
             pipeline (Optional[Pipeline], optional): The pipeline to use. Defaults to None.
         """
+        from typing import Optional
         self._state = state
         connection = pipeline if pipeline is not None else self.connection
         connection.hset(self.key, 'state', state)
