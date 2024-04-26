@@ -118,12 +118,17 @@ def get_current_job(connection: Optional['Redis'] = None, job_class: Optional['J
         job_class (Optional[Job], optional): The job class (DEPRECATED). Defaults to None.
 
     Returns:
+def get_current_job(job: Optional[Job]) -> Job:
+    """
+    Get the current Job running.
+
+    Args:
         job (Optional[Job]): The current Job running
     """
     if connection:
-        warnings.warn("connection argument for get_current_job is deprecated.", DeprecationWarning)
+        warnings.warn("The 'connection' argument is deprecated and no longer needed. Use job_instance.connection instead.", DeprecationWarning)
     if job_class:
-        warnings.warn("job_class argument for get_current_job is deprecated.", DeprecationWarning)
+        warnings.warn("The 'job_class' argument is deprecated and no longer needed. Use job_instance.__class__ instead.", DeprecationWarning)
     return _job_stack.top
 
 

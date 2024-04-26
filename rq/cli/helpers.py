@@ -254,6 +254,22 @@ def parse_function_arg(argument, arg_pos):
         LITERAL_EVAL = 2
 
     keyword = None
+from typing import Any, Tuple, Union
+from json import loads
+from ast import literal_eval
+from json.decoder import JSONDecodeError
+import click
+
+class ParsingMode:
+    JSON = 'json'
+    LITERAL_EVAL = 'literal_eval'
+    PLAIN_TEXT = 'plain_text'
+
+def parse_function_arg(argument: str, arg_pos: int) -> Tuple[Union[str, None], Any]:
+    mode: ParsingMode
+    keyword: Union[str, None] = None
+    value: Any
+
     if argument.startswith(':'):  # no keyword, json
         mode = ParsingMode.JSON
         value = argument[1:]
@@ -301,10 +317,9 @@ def parse_function_arg(argument, arg_pos):
 
     return keyword, value
 
-
-def parse_function_args(arguments):
-    args = []
-    kwargs = {}
+def parse_function_args(arguments: List[str]) -> Tuple[List[Any], Dict[str, Any]]:
+    args: List[Any] = []
+    kwargs: Dict[str, Any] = {}
 
     for argument in arguments:
         keyword, value = parse_function_arg(argument, len(args) + 1)
