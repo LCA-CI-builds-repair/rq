@@ -60,16 +60,14 @@ class Group:
         return [job for job in Job.fetch_many(job_ids, self.connection) if job is not None]
 
     def delete(self):
-        self.connection.delete(self.key)
-
-    def delete_job(self, job_id: str, pipeline: Optional['Pipeline'] = None):
+    def delete_job(self, job_id: str, pipeline: Optional['Pipeline'] = None) -> None:
         pipe = pipeline if pipeline else self.connection.pipeline()
         pipe.srem(self.key, job_id)
         if pipeline is None:
             pipe.execute()
 
     @classmethod
-    def create(cls, connection: Redis, id: Optional[str] = None):
+    def create(cls, connection: Redis, id: Optional[str] = None) -> 'Group':
         return cls(id=id, connection=connection)
 
     @classmethod

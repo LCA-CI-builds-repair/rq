@@ -692,11 +692,14 @@ class BaseWorker:
                 pass
 
     def set_current_job_working_time(self, current_job_working_time: float, pipeline: Optional['Pipeline'] = None):
-        """Sets the current job working time in seconds
+        """Sets the current job working time in seconds.
 
         Args:
             current_job_working_time (float): The current job working time in seconds
             pipeline (Optional[Pipeline], optional): Pipeline to use. Defaults to None.
+
+        Returns:
+            None
         """
         self.current_job_working_time = current_job_working_time
         connection = pipeline if pipeline is not None else self.connection
