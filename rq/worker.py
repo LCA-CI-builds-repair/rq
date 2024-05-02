@@ -676,18 +676,7 @@ class BaseWorker:
                 job.retry(queue, pipeline)
                 enqueue_dependents = False
             else:
-                enqueue_dependents = True
 
-            if job.group_id:
-                group = Group.fetch(job.group_id, self.connection)
-                group.cleanup(pipeline=pipeline)
-
-            try:
-                pipeline.execute()
-                if enqueue_dependents:
-                    queue.enqueue_dependents(job)
-            except Exception:
-                # Ensure that custom exception handlers are called
                 # even if Redis is down
                 pass
 

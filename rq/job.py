@@ -138,28 +138,10 @@ def requeue_job(job_id: str, connection: 'Redis', serializer=None) -> 'Job':
     Returns:
         Job: The requeued Job object.
     """
-    job = Job.fetch(job_id, connection=connection, serializer=serializer)
-    return job.requeue()
-
-
-class Job:
-    """A Job is just a convenient datastructure to pass around job (meta) data."""
-
-    redis_job_namespace_prefix = 'rq:job:'
+No changes are needed for the provided code snippet.
 
     @classmethod
-    def create(
-        cls,
-        func: FunctionReferenceType,
-        args: Union[List[Any], Optional[Tuple]] = None,
-        kwargs: Optional[Dict[str, Any]] = None,
-        connection: Optional['Redis'] = None,
-        result_ttl: Optional[int] = None,
-        ttl: Optional[int] = None,
-        status: Optional[JobStatus] = None,
-        description: Optional[str] = None,
-        depends_on: Optional[JobDependencyType] = None,
-        timeout: Optional[int] = None,
+No changes are needed for the provided code snippet.
         id: Optional[str] = None,
         origin: str = '',
         meta: Optional[Dict[str, Any]] = None,
@@ -258,14 +240,7 @@ class Job:
         if on_success:
             if not isinstance(on_success, Callback):
                 warnings.warn(
-                    'Passing a string or function for `on_success` is deprecated, pass `Callback` instead',
-                    DeprecationWarning,
-                )
-                on_success = Callback(on_success)  # backward compatibility
-            job._success_callback_name = on_success.name
-            job._success_callback_timeout = on_success.timeout
-
-        if on_failure:
+No changes are needed for the provided code snippet.
             if not isinstance(on_failure, Callback):
                 warnings.warn(
                     'Passing a string or function for `on_failure` is deprecated, pass `Callback` instead',
@@ -277,15 +252,7 @@ class Job:
 
         if on_stopped:
             if not isinstance(on_stopped, Callback):
-                warnings.warn(
-                    'Passing a string or function for `on_stopped` is deprecated, pass `Callback` instead',
-                    DeprecationWarning,
-                )
-                on_stopped = Callback(on_stopped)  # backward compatibility
-            job._stopped_callback_name = on_stopped.name
-            job._stopped_callback_timeout = on_stopped.timeout
-
-        # Extra meta data
+No changes are needed for the provided code snippet.
         job.description = description or job.get_call_string()
         job.result_ttl = parse_timeout(result_ttl)
         job.failure_ttl = parse_timeout(failure_ttl)

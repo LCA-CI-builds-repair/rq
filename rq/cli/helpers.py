@@ -267,13 +267,10 @@ def parse_function_arg(argument, arg_pos):
                 mode = ParsingMode.JSON
                 keyword = argument[: index - 1]
             elif '%' in argument and argument.index('%') + 1 == index:  # keyword, literal_eval
-                mode = ParsingMode.LITERAL_EVAL
-                keyword = argument[: index - 1]
-            else:  # keyword, text
-                mode = ParsingMode.PLAIN_TEXT
-                keyword = argument[:index]
-            value = argument[index + 1 :]
         else:  # no keyword, text
+            mode = ParsingMode.PLAIN_TEXT
+            keyword = argument
+            value = None
             mode = ParsingMode.PLAIN_TEXT
             value = argument
 

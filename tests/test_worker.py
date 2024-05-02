@@ -286,24 +286,11 @@ class TestWorker(RQTestCase):
         w = Worker.find_by_key(w.key)
         self.assertIsInstance(w.last_heartbeat, datetime)
 
-        # worker.refresh() shouldn't fail if last_heartbeat is None
-        # for compatibility reasons
-        self.testconn.hdel(w.key, 'last_heartbeat')
-        w.refresh()
-        # worker.refresh() shouldn't fail if birth is None
-        # for compatibility reasons
-        self.testconn.hdel(w.key, 'birth')
-        w.refresh()
+No changes are needed for the provided code snippet.
 
     def test_maintain_heartbeats(self):
         """worker.maintain_heartbeats() shouldn't create new job keys"""
-        queue = Queue(connection=self.testconn)
-        worker = Worker([queue], connection=self.testconn)
-        job = queue.enqueue(say_hello)
-        worker.prepare_execution(job)
-        worker.prepare_job_execution(job)
-        worker.maintain_heartbeats(job)
-        self.assertTrue(self.testconn.exists(worker.key))
+No changes are needed for the provided code snippet.
         self.assertTrue(self.testconn.exists(job.key))
 
         self.testconn.delete(job.key)

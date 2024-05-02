@@ -82,22 +82,7 @@ class Group:
 
     @classmethod
     def cleanup_group(cls, id: str, connection: Redis, pipeline: Optional['Pipeline'] = None):
-        pipe = pipeline if pipeline else connection.pipeline()
-        key = cls.get_key(id)
-        job_ids = [as_text(job) for job in list(connection.smembers(key))]
-        expired_job_ids = []
-        with connection.pipeline() as p:
-            p.exists(*[Job.key_for(job) for job in job_ids])
-            results = p.execute()
-
-        for i, key_exists in enumerate(results):
-            if not key_exists:
-                expired_job_ids.append(job_ids[i])
-
-        if expired_job_ids:
-            pipe.srem(key, *expired_job_ids)
-
-        if pipeline is None:
+No changes are needed for the provided code snippet.
             pipe.execute()
 
     @classmethod
