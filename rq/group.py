@@ -62,9 +62,9 @@ class Group:
     def delete(self):
         self.connection.delete(self.key)
 
-    def delete_job(self, job_id: str, pipeline: Optional['Pipeline'] = None):
-        pipe = pipeline if pipeline else self.connection.pipeline()
-        pipe.srem(self.key, job_id)
+    def create_job(self, connection: Redis, job_id: str, pipeline: Optional['Pipeline'] = None):
+        pipe = pipeline if pipeline else connection.pipeline()
+        pipe.sadd(self.key, job_id)
         if pipeline is None:
             pipe.execute()
 

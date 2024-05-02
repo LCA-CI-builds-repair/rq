@@ -698,6 +698,10 @@ class BaseWorker:
             current_job_working_time (float): The current job working time in seconds
             pipeline (Optional[Pipeline], optional): Pipeline to use. Defaults to None.
         """
+        if pipeline is None:
+            self.connection.hset(self.key, 'current_job_working_time', current_job_working_time)
+        else:
+            pipeline.hset(self.key, 'current_job_working_time', current_job_working_time)
         self.current_job_working_time = current_job_working_time
         connection = pipeline if pipeline is not None else self.connection
         connection.hset(self.key, 'current_job_working_time', current_job_working_time)
