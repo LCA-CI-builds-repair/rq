@@ -35,13 +35,13 @@ class Execution:
     @property
     def job(self) -> Job:
         return Job(id=self.job_id, connection=self.connection)
-
     @property
     def composite_key(self):
         return f'{self.job_id}:{self.id}'
 
     @classmethod
     def fetch(cls, id: str, job_id: str, connection: Redis) -> 'Execution':
+        """Fetch an execution from Redis."""
         """Fetch an execution from Redis."""
         execution = cls(id=id, job_id=job_id, connection=connection)
         execution.refresh()

@@ -89,7 +89,6 @@ class Group:
         with connection.pipeline() as p:
             p.exists(*[Job.key_for(job) for job in job_ids])
             results = p.execute()
-
         for i, key_exists in enumerate(results):
             if not key_exists:
                 expired_job_ids.append(job_ids[i])
@@ -102,10 +101,9 @@ class Group:
 
     @classmethod
     def all(cls, connection: 'Redis') -> List['Group']:
-        "Returns an iterable of all Groupes."
+        "Returns an iterable of all Groups."
         group_keys = [as_text(key) for key in connection.smembers(cls.REDIS_GROUP_KEY)]
         return [Group.fetch(key, connection=connection) for key in group_keys]
-
     @classmethod
     def get_key(cls, id: str) -> str:
         """Return the Redis key of the set containing a group's jobs"""
