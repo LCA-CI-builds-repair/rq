@@ -59,27 +59,9 @@ class Group:
         job_ids = [as_text(job) for job in self.connection.smembers(self.key)]
         return [job for job in Job.fetch_many(job_ids, self.connection) if job is not None]
 
-    def delete(self):
-        self.connection.delete(self.key)
-
-    def delete_job(self, job_id: str, pipeline: Optional['Pipeline'] = None):
-        pipe = pipeline if pipeline else self.connection.pipeline()
-        pipe.srem(self.key, job_id)
-        if pipeline is None:
-            pipe.execute()
-
     @classmethod
     def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
-
-    @classmethod
-    def fetch(cls, id: str, connection: Redis):
-        """Fetch an existing group from Redis"""
-        group = cls(id=id, connection=connection)
-        if not connection.exists(Group.get_key(group.id)):
-            raise NoSuchGroupError
-        return group
-
+        return cls(connection=connection)
     @classmethod
     def cleanup_group(cls, id: str, connection: Redis, pipeline: Optional['Pipeline'] = None):
         pipe = pipeline if pipeline else connection.pipeline()
