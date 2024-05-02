@@ -637,18 +637,18 @@ class Job:
 
         return jobs
 
-    def __init__(self, id: Optional[str] = None, connection: Optional['Redis'] = None, serializer=None):
+    def __init__(self, id: Optional[str] = None, connection: Optional['Redis'] = None, serializer: Optional[Any] = None):
         if connection:
             self.connection = connection
         else:
             self.connection = resolve_connection()
         self._id = id
-        self.created_at = utcnow()
-        self._data = UNEVALUATED
-        self._func_name = UNEVALUATED
-        self._instance = UNEVALUATED
-        self._args = UNEVALUATED
-        self._kwargs = UNEVALUATED
+        self.created_at: datetime = utcnow()
+        self._data: Any = None
+        self._func_name = None
+        self._instance = None
+        self._args = None
+        self._kwargs = None
         self._success_callback_name = None
         self._success_callback = UNEVALUATED
         self._failure_callback_name = None

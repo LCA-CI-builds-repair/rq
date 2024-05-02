@@ -69,7 +69,7 @@ class Group:
             pipe.execute()
 
     @classmethod
-    def create(cls, connection: Redis, id: Optional[str] = None):
+    def method_name_here(cls, connection: Redis, id: Optional[str] = None):
         return cls(id=id, connection=connection)
 
     @classmethod
