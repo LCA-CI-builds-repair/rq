@@ -20,7 +20,8 @@ class Group:
     def __init__(self, connection: Redis, name: str = None):
         self.name = name if name else str(uuid4())
         self.connection = connection
-        self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.id)
+        self.id = name if name else str(uuid4())
+        self.key = f"{self.REDIS_GROUP_NAME_PREFIX}{self.id}"
 
     def __repr__(self):
         return "Group(id={})".format(self.id)
@@ -70,7 +71,7 @@ class Group:
 
     @classmethod
     def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+        return cls(connection=connection, name=id)
 
     @classmethod
     def fetch(cls, id: str, connection: Redis):
