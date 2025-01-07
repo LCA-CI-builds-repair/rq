@@ -70,7 +70,10 @@ class Group:
 
     @classmethod
     def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+        if id is None:
+            return cls(connection=connection)
+        else:
+            return cls(id=id, connection=connection)
 
     @classmethod
     def fetch(cls, id: str, connection: Redis):
@@ -81,7 +84,8 @@ class Group:
         return group
 
     @classmethod
-    def cleanup_group(cls, id: str, connection: Redis, pipeline: Optional['Pipeline'] = None):
+    def cleanup_group(cls, id: str, connection: Redis,
+                      pipeline: Optional['Pipeline'] = None):
         pipe = pipeline if pipeline else connection.pipeline()
         key = cls.get_key(id)
         job_ids = [as_text(job) for job in list(connection.smembers(key))]
@@ -96,6 +100,8 @@ class Group:
 
         if expired_job_ids:
             pipe.srem(key, *expired_job_ids)
+
+        pipe.srem(cls.REDIS_GROUP_KEY, id)
 
         if pipeline is None:
             pipe.execute()
