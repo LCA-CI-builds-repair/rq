@@ -17,7 +17,7 @@ class TestGroup(RQTestCase):
 
     def test_create_group(self):
         q = Queue(connection=self.testconn)
-        group = Group.create(connection=self.testconn)
+        group = Group.create(connection=self.testconn, name="test_group")
         group.enqueue_many(q, [self.job_1_data, self.job_2_data])
         assert isinstance(group, Group)
         assert len(group.get_jobs()) == 2
@@ -124,13 +124,13 @@ class TestGroup(RQTestCase):
         q.empty()
 
     def test_get_group_key(self):
-        group = Group(name="foo", connection=self.testconn)
+        group = Group(connection=self.testconn, name="foo")
         self.assertEqual(Group.get_key(group.id), "rq:group:foo")
 
     def test_all_returns_all_groups(self):
         q = Queue(connection=self.testconn)
-        group1 = Group.create(name="group1", connection=self.testconn)
-        Group.create(name="group2", connection=self.testconn)
+        group1 = Group.create(connection=self.testconn, name="group1")
+        Group.create(connection=self.testconn, name="group2")
         group1.enqueue_many(q, [self.job_1_data, self.job_2_data])
         all_groups = Group.all(self.testconn)
         assert len(all_groups) == 1
