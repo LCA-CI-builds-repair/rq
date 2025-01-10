@@ -18,8 +18,7 @@ class Group:
     REDIS_GROUP_KEY = 'rq:groups'
 
     def __init__(self, connection: Redis, name: str = None):
-        self.name = name if name else str(uuid4())
-        self.connection = connection
+        self.name = name or str(uuid4())        self.connection = connection
         self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.id)
 
     def __repr__(self):
@@ -69,8 +68,8 @@ class Group:
             pipe.execute()
 
     @classmethod
-    def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+    def create(cls, connection: Redis, name: Optional[str] = None):
+        return cls(name=name, connection=connection)
 
     @classmethod
     def fetch(cls, id: str, connection: Redis):
