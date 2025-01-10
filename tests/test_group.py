@@ -124,7 +124,7 @@ class TestGroup(RQTestCase):
         q.empty()
 
     def test_get_group_key(self):
-        group = Group(name="foo", connection=self.testconn)
+        group = Group(connection=self.testconn, id="foo")
         self.assertEqual(Group.get_key(group.id), "rq:group:foo")
 
     def test_all_returns_all_groups(self):

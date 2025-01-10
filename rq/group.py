@@ -69,8 +69,10 @@ class Group:
             pipe.execute()
 
     @classmethod
-    def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+    def create(cls, connection: Redis, name: Optional[str] = None, id: Optional[str] = None):
+        if name and id:
+            raise ValueError("Cannot specify both name and id")
+        return cls(connection=connection, id=name or id)
 
     @classmethod
     def fetch(cls, id: str, connection: Redis):
