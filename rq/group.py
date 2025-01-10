@@ -17,13 +17,12 @@ class Group:
     REDIS_GROUP_NAME_PREFIX = 'rq:group:'
     REDIS_GROUP_KEY = 'rq:groups'
 
-    def __init__(self, connection: Redis, name: str = None):
+    def __init__(self, name: str, connection: Redis):
         self.name = name if name else str(uuid4())
         self.connection = connection
-        self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.id)
-
+        self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.name)
     def __repr__(self):
-        return "Group(id={})".format(self.id)
+        return "Group(name={})".format(self.name)
 
     def _add_jobs(self, jobs: List[Job], pipeline: Pipeline):
         """Add jobs to the group"""
@@ -37,7 +36,7 @@ class Group:
         """Delete jobs from the group's job registry that have been deleted or expired from Redis.
         We assume while running this that alive jobs have all been fetched from Redis in fetch_jobs method"""
         pipe = pipeline if pipeline else self.connection.pipeline()
-        Group.cleanup_group(self.id, self.connection, pipeline=pipe)
+        Group.cleanup_group(self.name, self.connection, pipeline=pipe)
         if pipeline is None:
             pipe.execute()
 
@@ -69,21 +68,21 @@ class Group:
             pipe.execute()
 
     @classmethod
-    def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+    def create(cls, name: Optional[str] = None, connection: Redis):
+        return cls(name=name, connection=connection)
 
     @classmethod
-    def fetch(cls, id: str, connection: Redis):
+    def fetch(cls, name: str, connection: Redis):
         """Fetch an existing group from Redis"""
-        group = cls(id=id, connection=connection)
-        if not connection.exists(Group.get_key(group.id)):
+        group = cls(name=name, connection=connection)
+        if not connection.exists(Group.get_key(group.name)):
             raise NoSuchGroupError
         return group
 
     @classmethod
-    def cleanup_group(cls, id: str, connection: Redis, pipeline: Optional['Pipeline'] = None):
+    def cleanup_group(cls, name: str, connection: Redis, pipeline: Optional['Pipeline'] = None):
         pipe = pipeline if pipeline else connection.pipeline()
-        key = cls.get_key(id)
+        key = cls.get_key(name)
         job_ids = [as_text(job) for job in list(connection.smembers(key))]
         expired_job_ids = []
         with connection.pipeline() as p:
@@ -107,7 +106,7 @@ class Group:
         return [Group.fetch(key, connection=connection) for key in group_keys]
 
     @classmethod
-    def get_key(cls, id: str) -> str:
+    def get_key(cls, name: str) -> str:
         """Return the Redis key of the set containing a group's jobs"""
         return cls.REDIS_GROUP_NAME_PREFIX + id
 
