@@ -69,8 +69,9 @@ class Group:
             pipe.execute()
 
     @classmethod
-    def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+    def create(cls, connection: Redis):
+        group = cls(connection=connection)
+        return group
 
     @classmethod
     def fetch(cls, id: str, connection: Redis):
