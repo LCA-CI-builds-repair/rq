@@ -20,10 +20,10 @@ class Group:
     def __init__(self, connection: Redis, name: str = None):
         self.name = name if name else str(uuid4())
         self.connection = connection
-        self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.id)
+        self.key = '{0}{1}'.format(self.REDIS_GROUP_NAME_PREFIX, self.name)
 
     def __repr__(self):
-        return "Group(id={})".format(self.id)
+        return "Group(name={})".format(self.name)
 
     def _add_jobs(self, jobs: List[Job], pipeline: Pipeline):
         """Add jobs to the group"""
@@ -69,8 +69,8 @@ class Group:
             pipe.execute()
 
     @classmethod
-    def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+    def create(cls, connection: Redis, name: Optional[str] = None):
+        return cls(name=name, connection=connection)
 
     @classmethod
     def fetch(cls, id: str, connection: Redis):
@@ -112,7 +112,7 @@ class Group:
         return cls.REDIS_GROUP_NAME_PREFIX + id
 
     @classmethod
-    def clean_registries(cls, connection: 'Redis'):
+    def clean_registries(cls, connection: Redis):
         """Loop through groups and delete those that have been deleted.
         If group still has jobs in its registry, delete those that have expired"""
         groups = connection.smembers(Group.REDIS_GROUP_KEY)
