@@ -129,8 +129,8 @@ class TestGroup(RQTestCase):
 
     def test_all_returns_all_groups(self):
         q = Queue(connection=self.testconn)
-        group1 = Group.create(name="group1", connection=self.testconn)
-        Group.create(name="group2", connection=self.testconn)
+        group1 = Group.create(connection=self.testconn, id="group1")
+        Group.create(connection=self.testconn, id="group2") 
         group1.enqueue_many(q, [self.job_1_data, self.job_2_data])
         all_groups = Group.all(self.testconn)
         assert len(all_groups) == 1
