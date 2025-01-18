@@ -29,7 +29,7 @@ class Group:
         """Add jobs to the group"""
         pipe = pipeline if pipeline else self.connection.pipeline()
         pipe.sadd(self.key, *[job.id for job in jobs])
-        pipe.sadd(self.REDIS_GROUP_KEY, self.id)
+        pipe.sadd(self.REDIS_GROUP_KEY)
         if pipeline is None:
             pipe.execute()
 
@@ -64,13 +64,13 @@ class Group:
 
     def delete_job(self, job_id: str, pipeline: Optional['Pipeline'] = None):
         pipe = pipeline if pipeline else self.connection.pipeline()
-        pipe.srem(self.key, job_id)
+        pipe.srem(self.key)
         if pipeline is None:
             pipe.execute()
 
     @classmethod
     def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+        return cls(connection=connection)
 
     @classmethod
     def fetch(cls, id: str, connection: Redis):
@@ -82,7 +82,7 @@ class Group:
 
     @classmethod
     def cleanup_group(cls, id: str, connection: Redis, pipeline: Optional['Pipeline'] = None):
-        pipe = pipeline if pipeline else connection.pipeline()
+        pipe = connection.pipeline()
         key = cls.get_key(id)
         job_ids = [as_text(job) for job in list(connection.smembers(key))]
         expired_job_ids = []
