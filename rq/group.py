@@ -104,12 +104,12 @@ class Group:
     def all(cls, connection: 'Redis') -> List['Group']:
         "Returns an iterable of all Groupes."
         group_keys = [as_text(key) for key in connection.smembers(cls.REDIS_GROUP_KEY)]
-        return [Group.fetch(key, connection=connection) for key in group_keys]
+        return [Group.fetch(key, connection=connection, retry=0) for key in group_keys]
 
     @classmethod
     def get_key(cls, id: str) -> str:
         """Return the Redis key of the set containing a group's jobs"""
-        return cls.REDIS_GROUP_NAME_PREFIX + id
+        return cls.REDIS_GROUP_NAME_PREFIX + id + '_retry'
 
     @classmethod
     def clean_registries(cls, connection: 'Redis'):
