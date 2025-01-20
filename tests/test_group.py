@@ -17,7 +17,7 @@ class TestGroup(RQTestCase):
 
     def test_create_group(self):
         q = Queue(connection=self.testconn)
-        group = Group.create(connection=self.testconn)
+        group = Group.create(connection=self.testconn, id="test_group")
         group.enqueue_many(q, [self.job_1_data, self.job_2_data])
         assert isinstance(group, Group)
         assert len(group.get_jobs()) == 2
@@ -25,14 +25,14 @@ class TestGroup(RQTestCase):
 
     def test_group_jobs(self):
         q = Queue(connection=self.testconn)
-        group = Group.create(connection=self.testconn)
+        group = Group.create(connection=self.testconn, id="test_group")
         jobs = group.enqueue_many(q, [self.job_1_data, self.job_2_data])
         self.assertCountEqual(group.get_jobs(), jobs)
         q.empty()
 
     def test_fetch_group(self):
         q = Queue(connection=self.testconn)
-        enqueued_group = Group.create(connection=self.testconn)
+        enqueued_group = Group.create(connection=self.testconn, id="test_group")
         enqueued_group.enqueue_many(q, [self.job_1_data, self.job_2_data])
         fetched_group = Group.fetch(enqueued_group.id, self.testconn)
         self.assertCountEqual(enqueued_group.get_jobs(), fetched_group.get_jobs())
@@ -41,7 +41,7 @@ class TestGroup(RQTestCase):
 
     def test_add_jobs(self):
         q = Queue(connection=self.testconn)
-        group = Group.create(connection=self.testconn)
+        group = Group.create(connection=self.testconn, id="test_group")
         group.enqueue_many(q, [self.job_1_data, self.job_2_data])
         job2 = group.enqueue_many(q, [self.job_1_data, self.job_2_data])[0]
         assert job2 in group.get_jobs()
@@ -129,8 +129,8 @@ class TestGroup(RQTestCase):
 
     def test_all_returns_all_groups(self):
         q = Queue(connection=self.testconn)
-        group1 = Group.create(name="group1", connection=self.testconn)
-        Group.create(name="group2", connection=self.testconn)
+        group1 = Group.create(connection=self.testconn, id="group1")
+        Group.create(connection=self.testconn, id="group2")
         group1.enqueue_many(q, [self.job_1_data, self.job_2_data])
         all_groups = Group.all(self.testconn)
         assert len(all_groups) == 1

@@ -70,7 +70,7 @@ class Group:
 
     @classmethod
     def create(cls, connection: Redis, id: Optional[str] = None):
-        return cls(id=id, connection=connection)
+        return cls(connection=connection, name=id)
 
     @classmethod
     def fetch(cls, id: str, connection: Redis):
